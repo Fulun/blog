@@ -22,5 +22,8 @@ ArrayList机理类似。re-size：重新创建一个大小是原来的2倍的buc
 #### Can we use any custom object as a key in HashMap?
 Of course you can use any Object as key in JavaHashMap provided it follows equals and hashCode contract and its hashCode should not vary once the object is inserted into  [Map](http://javarevisited.blogspot.sg/2011/12/how-to-traverse-or-loop-hashmap-in-java.html). If the custom object is Immutable then this will be already taken care because you can not change it once created.\
 当然可以。前提是作为key的Object需要遵循equals和hashcode的约束（都必须复写）。一旦key插入Map，key的hashcode就不能变了。
-
+***
+#### Can we use ConcurrentHashMap in place of Hashtable?
+Since we know Hashtable is synchronized but ConcurrentHashMap provides better concurrency by only locking portion of map determined by concurrency level. ConcurrentHashMap is certainly introduced as Hashtable and can be used in place of it, but Hashtable provides stronger thread-safety than ConcurrentHashMap.\
+当然可以。HashTable是线程同步。而ConcurrentHashMap提供更好的并发特性。因为后者只锁Map的部分代码。Hashtable提供更强的thread-safety。
 
