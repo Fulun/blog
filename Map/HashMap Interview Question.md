@@ -1,4 +1,8 @@
-#### Perfact HashMap Key
-using **immutable, final object** with proper **_equals()_** and **_hashcode()_** implementation would act as perfect Java HashMap keys.111133
+---
 
+
+---
+
+<h4 id="perfact-hashmap-key">Perfact HashMap Key</h4>
+<p>using <strong>immutable, final object</strong> with proper <strong><em>equals()</em></strong> and <strong><em>hashcode()</em></strong> implementation would act as perfect Java HashMap keys.111133</p>
 
