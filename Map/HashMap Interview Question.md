@@ -17,6 +17,10 @@ ArrayList机理类似。re-size：重新创建一个大小是原来的2倍的buc
 - String, Integer and other wrapper classes are natural candidates of HashMap key, and String is most frequently used key as well because  [String is immutable and final](http://javarevisited.blogspot.sg/2010/10/why-string-is-immutable-in-java.html), and overrides equals and hashcode() method. Other wrapper class also shares similar property.\
 因为String是immutable和final的，同时复写了equals和Hashcode方法。
 - Immutability is required, in order to prevent changes on fields used to calculate hashCode(). because if key object returns different hashCode during insertion and retrieval than it won't be possible to get an object from HashMap.
-- Immutability is best as it offers other advantages as well like [thread-safety](http://javarevisited.blogspot.sg/2012/01/how-to-write-thread-safe-code-in-java.html),
+- Immutability is best as it offers other advantages as well like [thread-safety](http://javarevisited.blogspot.sg/2012/01/how-to-write-thread-safe-code-in-java.html).
+***
+#### Can we use any custom object as a key in HashMap?
+Of course you can use any Object as key in JavaHashMap provided it follows equals and hashCode contract and its hashCode should not vary once the object is inserted into  [Map](http://javarevisited.blogspot.sg/2011/12/how-to-traverse-or-loop-hashmap-in-java.html). If the custom object is Immutable then this will be already taken care because you can not change it once created.\
+当然可以。前提是作为key的Object需要遵循equals和hashcode的约束（都必须复写）。一旦key插入Map，key的hashcode就不能变了。
 
 
