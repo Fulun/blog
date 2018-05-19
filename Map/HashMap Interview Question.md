@@ -9,7 +9,7 @@
 ArrayList机理类似。通过重新创建一个大小是原来的2倍的bucket来实现re-size。
 - **do you see any problem with resizing of HashMap in Java?**
 
-    - 
+    - 1
 
 
 
