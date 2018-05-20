@@ -26,4 +26,25 @@ Of course you can use any Object as key in JavaHashMap provided it follows equal
 #### Can we use ConcurrentHashMap in place of Hashtable?
 Since we know Hashtable is synchronized but ConcurrentHashMap provides better concurrency by only locking portion of map determined by concurrency level. ConcurrentHashMap is certainly introduced as Hashtable and can be used in place of it, but Hashtable provides stronger thread-safety than ConcurrentHashMap.\
 当然可以。HashTable是线程同步。而ConcurrentHashMap提供更好的并发特性。因为后者只锁Map的部分代码。Hashtable提供更强的thread-safety。
+***
+#### How null key is handled in HashMap? Since equals() and hashCode() are used to store and retrieve values, how does it work in case of the null key?
+The *null* key is handled specially in HashMap. there are two separate methods for that ***putForNullKey(V value)*** and ***getForNullKey()***(这两个方法都是offloaded verion，个人理解应该是已经不用的方法，JDK1.7之前应该还在用，[源码参考](http://grepcode.com/file/repository.grepcode.com/java/root/jdk/openjdk/6-b14/java/util/HashMap.java#HashMap.putForNullKey%28java.lang.Object%29))Null keys always map to index 0. ***equals()*** and ***hashcode()*** method are not used in case of null keys in HashMap. 总结：
+1. HashMap可以将null作为key 和value。
+2. HashMap的get(key)方法返回null。一种可能是没有这个key-value对，也有可能是value本身就是null。此时可以通过*containKey(Object)*方法判断key是否存在。\
+2.1 Returns the value to which the specified key is mapped, or null if this map contains no mapping for the key.
+More formally, if this map contains a mapping from a key ***k*** to a value ***v*** such that *(key\==null ? k==null : key.equals(k))*, then this method returns ***v***; otherwise it returns ***null***. (There can be at most one such mapping.)
+**A return value of *null* does not necessarily indicate that the map contains no mapping for the key; it's also possible that the map explicitly maps the key to ***null***. The containsKey operation may be used to distinguish these two cases**.
+3. equals 和hashcode方法不用在key等于null的场景。如下代码截取自 [源码参考](http://grepcode.com/file/repository.grepcode.com/java/root/jdk/openjdk/6-b14/java/util/HashMap.java#HashMap.putForNullKey%28java.lang.Object%29))
+```Java
+private V getForNullKey() {
+	if (size == 0) {
+		return null;
+	}
+	for (Entry<K,V> e = table[0]; e != null; e = e.next) {
+		if (e.key == null)
+			return e.value;
+	}
+	return null;
+}
+```
 
