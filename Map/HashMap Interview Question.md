@@ -28,7 +28,7 @@ Since we know Hashtable is synchronized but ConcurrentHashMap provides better co
 当然可以。HashTable是线程同步。而ConcurrentHashMap提供更好的并发特性。因为后者只锁Map的部分代码。Hashtable提供更强的thread-safety。
 ***
 #### How null key is handled in HashMap? Since equals() and hashCode() are used to store and retrieve values, how does it work in case of the null key?
-The *null* key is handled specially in HashMap. there are two separate methods for that ***putForNullKey(V value)*** and **_getForNullKey()_**(这两个方法都是offloaded verion，个人理解应该是已经不用的方法，JDK1.7之前应该还在用，[源码参考](http://grepcode.com/file/repository.grepcode.com/java/root/jdk/openjdk/6-b14/java/util/HashMap.java#HashMap.putForNullKey%28java.lang.Object%29))Null keys always map to index 0. ***equals()*** and ***hashcode()*** method are not used in case of null keys in HashMap. 总结：
+The *null* key is handled specially in HashMap. there are two separate methods for that ***putForNullKey(V value)*** and **_getForNullKey()_**(这两个方法都是offloaded verion，个人理解应该是已经不用的方法，JDK1.7之前应该还在用，[源码参考](http://grepcode.com/file/repository.grepcode.com/java/root/jdk/openjdk/6-b14/java/util/HashMap.java#HashMap.putForNullKey%28java.lang.Object%29)) ***null*** keys always map to index 0. ***equals()*** and ***hashcode()*** method are not used in case of null keys in HashMap. 总结：
 1. HashMap可以将null作为key 和value。
 2. HashMap的get(key)方法返回null。一种可能是没有这个key-value对，也有可能是value本身就是null。此时可以通过containKey(Object)方法判断key是否存在。\
 2.1 Returns the value to which the specified key is mapped, or null if this map contains no mapping for the key.
@@ -47,4 +47,5 @@ private V getForNullKey() {
 	return null;
 }
 ```
+4. key等于null时，一般是table[0]。
 
