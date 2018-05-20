@@ -49,6 +49,6 @@ private V getForNullKey() {
 ```
 4. key等于null时，一般是table[0]。
 ***
-- Reference
+- Reference\
 [How HashMap works in Java](https://javarevisited.blogspot.kr/2011/02/how-hashmap-works-in-java.html)\
 [What is the use of adding a null key or value to a HashMap in Java?](https://stackoverflow.com/questions/2945309/what-is-the-use-of-adding-a-null-key-or-value-to-a-hashmap-in-java?utm_medium=organic&utm_source=google_rich_qa&utm_campaign=google_rich_qa)
