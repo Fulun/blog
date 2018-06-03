@@ -111,7 +111,7 @@ public class BillPughSingleton {
 }
 ```
 注意加final。 Notice the **private inner static class** that contains the instance of the singleton class. When the singleton class is loaded, SingletonHelper class is not loaded into memory and **only when someone calls the getInstance method, this class gets loaded and creates the Singleton class instance**.  
-This is the most widely used approach for Singleton class **as it doesn’t require synchronization**. I am using this approach in many of my projects and it’s easy to understand and implement also. 
+This is the most widely used approach for Singleton class **as it doesn’t require synchronization**. I am using this approach in many of my projects and it’s easy to understand and implement also.  
 6. **Using Reflection to destroy Singleton Pattern**  
 Reflection can be used to destroy all the above singleton implementation approaches. Let’s see this with an example class.上述的所有单例都可以通过反射的形式破坏。 
 ```Java
@@ -182,4 +182,70 @@ java.lang.NoSuchMethodException: Singleon.EnumSingleton.<init>()
 | 双重锁检测   | yes           | No               |Yes        | 
 | 静态内部类   | yes           | No               |yes        | 
 | 枚举         | yes           | Yes              |No         |  
+8. **Serialization and Singleton**  
+Sometimes in distributed systems, we need to implement Serializable interface in Singleton class so that we can store it’s state in file system and retrieve it at later point of time. Here is a small singleton class that implements Serializable interface also.
+```Java
+public class SerializedSingleton implements Serializable{
+
+    private static final long serialVersionUID = -7604766932017737115L;
+
+    private SerializedSingleton(){}
+    
+    private static class SingletonHelper{
+        private static final SerializedSingleton instance = new SerializedSingleton();
+    }
+    
+    public static SerializedSingleton getInstance(){
+        return SingletonHelper.instance;
+    }
+    
+}
+```
+The problem with above serialized singleton class is that whenever we deserialize it, it will create a new instance of the class. Let’s see it with a simple program. 反序列化的时候发现hashcode不相等，也就是说不是同一个实例。
+```Java
+public class SingletonSerializedTest {
+
+    public static void main(String[] args) throws FileNotFoundException, IOException, ClassNotFoundException {
+        SerializedSingleton instanceOne = SerializedSingleton.getInstance();
+        ObjectOutput out = new ObjectOutputStream(new FileOutputStream(
+                "filename.ser"));
+        out.writeObject(instanceOne);
+        out.close();
+        
+        //deserailize from file to object
+        ObjectInput in = new ObjectInputStream(new FileInputStream(
+                "filename.ser"));
+        SerializedSingleton instanceTwo = (SerializedSingleton) in.readObject();
+        in.close();
+        
+        System.out.println("instanceOne hashCode="+instanceOne.hashCode());
+        System.out.println("instanceTwo hashCode="+instanceTwo.hashCode());        
+    }
+}/*
+instanceOne hashCode=2011117821
+instanceTwo hashCode=109647522
+*///~
+```
+So it destroys the singleton pattern, **to overcome this scenario all we need to do is providing the implementation of readResolve() method**. 显然，序列化，反序列话破坏了单例，如何解决呢？实现`readSolver()`方法，如下所示：  
+```Java
+public class SerializedSingleton implements Serializable {
+
+	private static final long serialVersionUID = -7604766932017737115L;
+
+	private SerializedSingleton() {
+	}
+
+	private static class SingletonHelper {
+		private static final SerializedSingleton instance = new SerializedSingleton();
+	}
+
+	public static SerializedSingleton getInstance() {
+		return SingletonHelper.instance;
+	}
+	
+	protected Object readResolve() {
+	    return getInstance();
+	}
+}
+```
 
