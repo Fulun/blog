@@ -94,7 +94,7 @@ public class ThreadSafeSingletonWithDoubleLocking {
 }
 ```
 为了防止指令重排，我们需要给instance加上volatile属性。  
-5. **Bill Pugh Singleton Implementation** 非多线程场景下，最好的方法  
+5. **Bill Pugh Singleton Implementation** 线程安全，不需要同步，最好的方法  
 Prior to Java 5, java memory model had a lot of issues and above approaches used to fail in certain scenarios where too many threads try to get the instance of the Singleton class simultaneously. So Bill Pugh came up with a different approach to create the Singleton class using a **inner static helper class**. The Bill Pugh Singleton implementation goes like this:  
 ```Java
 public class BillPughSingleton {
@@ -111,4 +111,75 @@ public class BillPughSingleton {
 }
 ```
 注意加final。 Notice the **private inner static class** that contains the instance of the singleton class. When the singleton class is loaded, SingletonHelper class is not loaded into memory and **only when someone calls the getInstance method, this class gets loaded and creates the Singleton class instance**.  
-This is the most widely used approach for Singleton class as it doesn’t require synchronization. I am using this approach in many of my projects and it’s easy to understand and implement also. 
+This is the most widely used approach for Singleton class **as it doesn’t require synchronization**. I am using this approach in many of my projects and it’s easy to understand and implement also. 
+6. **Using Reflection to destroy Singleton Pattern**  
+Reflection can be used to destroy all the above singleton implementation approaches. Let’s see this with an example class.上述的所有单例都可以通过反射的形式破坏。 
+```Java
+public class ReflectionSingletonTest {
+
+    public static void main(String[] args) {
+        EagerInitializedSingleton instanceOne = EagerInitializedSingleton.getInstance();
+        EagerInitializedSingleton instanceTwo = null;
+        try {
+            Constructor[] constructors = EagerInitializedSingleton.class.getDeclaredConstructors();
+            for (Constructor constructor : constructors) {
+                //Below code will destroy the singleton pattern
+                constructor.setAccessible(true);
+                instanceTwo = (EagerInitializedSingleton) constructor.newInstance();
+                break;
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        System.out.println(instanceOne.hashCode());
+        System.out.println(instanceTwo.hashCode());
+    }
+
+}
+```
+getDeclaredConstructors这个方法可以获取私有构造方法。
+When you run the above test class, you will notice that hashCode of both the instances are not same that destroys the singleton pattern.显然两者的hashcode不相等，单例被破坏。  
+7. **Enum Singleton**  
+To overcome this situation with Reflection, Joshua Bloch suggests the use of Enum to implement Singleton design pattern **as Java ensures that any enum value is instantiated only once in a Java program.** Since Java Enum values are globally accessible, so is the singleton. The drawback is that the enum type is somewhat inflexible; for example, it does not allow lazy initialization. 枚举单例，Java可以确保在Java程序中，任何枚举值只会被实例化一次。缺点是不够灵活，不允许懒汉初始化，其单例对象是在枚举类被加载的时候进行初始化的。 
+```Java
+public enum EnumSingleton {
+	INSTANCE;
+	
+	public static void doSomething() {
+		//do somethings
+	}
+}
+``` 
+JVM会阻止反射获取枚举类的私有构造方法。反射报错：  
+```Java
+import java.lang.reflect.Constructor;
+import java.lang.reflect.InvocationTargetException;
+
+public enum EnumSingleton {
+	INSTANCE;
+	
+	public static void main(String[] args) {
+		try {
+			Constructor<EnumSingleton> con = EnumSingleton.class
+					.getDeclaredConstructor();
+			con.setAccessible(true);
+			EnumSingleton singleton = con.newInstance();
+		} catch (NoSuchMethodException | SecurityException
+				| InstantiationException | IllegalAccessException
+				| IllegalArgumentException | InvocationTargetException e) {
+			e.printStackTrace();
+		}
+	}
+}/*
+java.lang.NoSuchMethodException: Singleon.EnumSingleton.<init>()
+	at java.lang.Class.getConstructor0(Unknown Source)
+	at java.lang.Class.getDeclaredConstructor(Unknown Source)
+	at Singleon.EnumSingleton.main(EnumSingleton.java:16)
+*///~
+```
+| 单例         | 线程安全      |是否防止反射构建  |是否懒加载 |
+| -------------|:-------------:|:----------------:|:---------:|
+| 双重锁检测   | yes           | No               |Yes        | 
+| 静态内部类   | yes           | No               |yes        | 
+| 枚举         | yes           | Yes              |No         |  
+
