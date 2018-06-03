@@ -226,7 +226,7 @@ instanceOne hashCode=2011117821
 instanceTwo hashCode=109647522
 *///~
 ```
-So it destroys the singleton pattern, **to overcome this scenario all we need to do is providing the implementation of readResolve() method**. 显然，序列化，反序列话破坏了单例，如何解决呢？实现`readSolver()`方法，如下所示：  
+So it destroys the singleton pattern, **to overcome this scenario all we need to do is providing the implementation of readResolve() method**. 显然，序列化，反序列话破坏了单例，如何解决呢？实现`readSolve()`方法，如下所示：
 ```Java
 public class SerializedSingleton implements Serializable {
 
