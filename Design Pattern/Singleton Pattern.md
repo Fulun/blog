@@ -143,11 +143,11 @@ When you run the above test class, you will notice that hashCode of both the ins
 To overcome this situation with Reflection, Joshua Bloch suggests the use of Enum to implement Singleton design pattern **as Java ensures that any enum value is instantiated only once in a Java program.** Since Java Enum values are globally accessible, so is the singleton. The drawback is that the enum type is somewhat inflexible; for example, it does not allow lazy initialization. 枚举单例，Java可以确保在Java程序中，任何枚举值只会被实例化一次。缺点是不够灵活，不允许懒汉初始化，其单例对象是在枚举类被加载的时候进行初始化的。 
 ```Java
 public enum EnumSingleton {
-	INSTANCE;
-	
-	public static void doSomething() {
-		//do somethings
-	}
+    INSTANCE;
+    
+    public static void doSomething() {
+        //do somethings
+    }
 }
 ``` 
 JVM会阻止反射获取枚举类的私有构造方法。反射报错：  
@@ -156,25 +156,25 @@ import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 
 public enum EnumSingleton {
-	INSTANCE;
-	
-	public static void main(String[] args) {
-		try {
-			Constructor<EnumSingleton> con = EnumSingleton.class
-					.getDeclaredConstructor();
-			con.setAccessible(true);
-			EnumSingleton singleton = con.newInstance();
-		} catch (NoSuchMethodException | SecurityException
-				| InstantiationException | IllegalAccessException
-				| IllegalArgumentException | InvocationTargetException e) {
-			e.printStackTrace();
-		}
-	}
+    INSTANCE;
+    
+    public static void main(String[] args) {
+        try {
+            Constructor<EnumSingleton> con = EnumSingleton.class
+                    .getDeclaredConstructor();
+            con.setAccessible(true);
+            EnumSingleton singleton = con.newInstance();
+        } catch (NoSuchMethodException | SecurityException
+                | InstantiationException | IllegalAccessException
+                | IllegalArgumentException | InvocationTargetException e) {
+            e.printStackTrace();
+        }
+    }
 }/*
 java.lang.NoSuchMethodException: Singleon.EnumSingleton.<init>()
-	at java.lang.Class.getConstructor0(Unknown Source)
-	at java.lang.Class.getDeclaredConstructor(Unknown Source)
-	at Singleon.EnumSingleton.main(EnumSingleton.java:16)
+    at java.lang.Class.getConstructor0(Unknown Source)
+    at java.lang.Class.getDeclaredConstructor(Unknown Source)
+    at Singleon.EnumSingleton.main(EnumSingleton.java:16)
 *///~
 ```
 | 单例         | 线程安全      |是否防止反射构建  |是否懒加载 |
