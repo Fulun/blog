@@ -49,7 +49,7 @@ public class Client {
 ```
 调用的接口没有变化（xx.request()），适配器只是做了适配, 将Adaptee适配成了客户期待的接口。  
 #### 对象适配器UML  
-![AdapterPattern](https://github.com/Fulun/blog/blob/master/images/AdapterPattern_1.jpg)
+![AdapterPattern](https://github.com/Fulun/blog/blob/master/images/AdapterPattern-1.jpg)
 ```Java
 public class Adapter_1 implements Target {
 
