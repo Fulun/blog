@@ -73,7 +73,7 @@ public class Adapter_1 implements Target {
 ```
 #### 缺醒适配器模式
 缺醒适配器模式(Default Adapter Pattern)：当不需要实现一个接口所提供的所有方法时，可先设计一个抽象类实现该接口，并为接口中的每个方法提供一个默认实现(空方法)，那么该抽象类可以有选择性的覆盖父类的某些方法来实现需求，它适用于不想使用一个接口中的所有方法的情况，又称为单接口适配器模式。
-![AdapterPattern](https://github.com/Fulun/blog/blob/master/images/defaultAdapterPattern.png)
+![AdapterPattern](https://github.com/Fulun/blog/blob/master/images/defaultAdapterPattern.png)  
 由图可知，在缺醒适配器模式中，包含以下三个角色：
 - ServiceInsterface(适配者接口)：它是一个接口，通常在该接口中声明了大量的方法。
 - AbstractServiceClass(缺醒适配器类)：它是缺醒适配器模式的核心类，使用空方法的形式实现了ServiceInterface接口中声明的方法。通常将它定义为抽象类，因为对它进行实例化也没有任何意义。
