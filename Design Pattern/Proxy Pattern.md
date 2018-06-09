@@ -6,55 +6,55 @@
 ```Java
 //定义接口
 public interface CommandExecutor {
-	public void runCommand(String cmd) throws Exception;
+    public void runCommand(String cmd) throws Exception;
 }
 
 //定义实现类
 public class CommandExecutorImpl implements CommandExecutor {
-	
-	@Override
-	public void runCommand(String command) throws IOException {
-		//some heavy implementation
-		//Runtime.getRuntime().exec(command);
-		System.out.println("'" + command + "'" + " command executed");
-	}
+    
+    @Override
+    public void runCommand(String command) throws IOException {
+        //some heavy implementation
+        //Runtime.getRuntime().exec(command);
+        System.out.println("'" + command + "'" + " command executed");
+    }
 }
 
 //定义代理类
 public class CommandExecutorProxy implements CommandExecutor {
-	private CommandExecutor executor;
-	private boolean isAdmin;
+    private CommandExecutor executor;
+    private boolean isAdmin;
 
-	public CommandExecutorProxy(String user, String password) {
-		if ("admin".equals(user) && "xxx".equals(password)) {
-			isAdmin = true;
-		}
-		executor = new CommandExecutorImpl();
-	}
+    public CommandExecutorProxy(String user, String password) {
+        if ("admin".equals(user) && "xxx".equals(password)) {
+            isAdmin = true;
+        }
+        executor = new CommandExecutorImpl();
+    }
 
-	@Override
-	public void runCommand(String command) throws Exception {
-		if (isAdmin) {
-			executor.runCommand(command);
-		} else {
-			if (command.trim().startsWith("rm")) {
-				throw new Exception(
-						"rm command is not allowed for non-admin users.");
-			} else {
-				executor.runCommand(command);
-			}
-		}
-	}
+    @Override
+    public void runCommand(String command) throws Exception {
+        if (isAdmin) {
+            executor.runCommand(command);
+        } else {
+            if (command.trim().startsWith("rm")) {
+                throw new Exception(
+                        "rm command is not allowed for non-admin users.");
+            } else {
+                executor.runCommand(command);
+            }
+        }
+    }
 
-	public static void main(String[] args) {
-		CommandExecutorProxy cmdProxy = new CommandExecutorProxy("admin", "ee");
-		try {
-			cmdProxy.runCommand("ls -l");
-			cmdProxy.runCommand("rm -rf *");
-		} catch (Exception e) {
-			System.out.println("Exception Msg:" + e.getMessage());
-		}
-	}
+    public static void main(String[] args) {
+        CommandExecutorProxy cmdProxy = new CommandExecutorProxy("admin", "ee");
+        try {
+            cmdProxy.runCommand("ls -l");
+            cmdProxy.runCommand("rm -rf *");
+        } catch (Exception e) {
+            System.out.println("Exception Msg:" + e.getMessage());
+        }
+    }
 }/*
 'ls -l' command executed
 Exception Msg:rm command is not allowed for non-admin users.
@@ -65,51 +65,51 @@ Exception Msg:rm command is not allowed for non-admin users.
 ```Java
 public class CommandExecutorDynamicProxy implements InvocationHandler {
 
-	private CommandExecutor executor;
-	private boolean isAdmin = false;
+    private CommandExecutor executor;
+    private boolean isAdmin = false;
 
-	public CommandExecutorDynamicProxy(String userName, CommandExecutor executor) {
-		if ("admin".equals(userName)) {
-			isAdmin = true;
-		}
-		this.executor = executor;
-	}
+    public CommandExecutorDynamicProxy(String userName, CommandExecutor executor) {
+        if ("admin".equals(userName)) {
+            isAdmin = true;
+        }
+        this.executor = executor;
+    }
 
-	@Override
-	public Object invoke(Object proxy, Method method, Object[] args)
-			throws Throwable {
-		if (isAdmin) {
-			return method.invoke(executor, args);
-		} else {
-			if ("runCommand".equals(method.getName()) && args.length > 0
-					&& args[0] instanceof String) {
-				if (((String) args[0]).trim().startsWith("rm")) {
-					throw new Exception(
-							"rm command is not allowed for non-admin users.");
-				} else {
-					return method.invoke(executor, args);
-				}
-			}
-			return null;
-		}
-	}
+    @Override
+    public Object invoke(Object proxy, Method method, Object[] args)
+            throws Throwable {
+        if (isAdmin) {
+            return method.invoke(executor, args);
+        } else {
+            if ("runCommand".equals(method.getName()) && args.length > 0
+                    && args[0] instanceof String) {
+                if (((String) args[0]).trim().startsWith("rm")) {
+                    throw new Exception(
+                            "rm command is not allowed for non-admin users.");
+                } else {
+                    return method.invoke(executor, args);
+                }
+            }
+            return null;
+        }
+    }
 
-	public static void main(String[] args) {
-		CommandExecutor executor = new CommandExecutorImpl();
-		CommandExecutorDynamicProxy exeProxy = new CommandExecutorDynamicProxy(
-				"123", executor);
-		CommandExecutor cmdProxy = (CommandExecutor) Proxy.newProxyInstance(
-				executor.getClass().getClassLoader(), executor.getClass()
-						.getInterfaces(), exeProxy);
-//		CommandExecutor cmdProxy = (CommandExecutor) Proxy.newProxyInstance(
-//				executor.getClass().getClassLoader(), new Class[]{CommandExecutor.class}, exeProxy);
-		try {
-			cmdProxy.runCommand("ls -l");
-			cmdProxy.runCommand("rm -rf *");
-		} catch (Exception e) {
-			System.out.println("Exception Msg:" + e.getMessage());
-		}
-	}
+    public static void main(String[] args) {
+        CommandExecutor executor = new CommandExecutorImpl();
+        CommandExecutorDynamicProxy exeProxy = new CommandExecutorDynamicProxy(
+                "123", executor);
+        CommandExecutor cmdProxy = (CommandExecutor) Proxy.newProxyInstance(
+                executor.getClass().getClassLoader(), executor.getClass()
+                        .getInterfaces(), exeProxy);
+//      CommandExecutor cmdProxy = (CommandExecutor) Proxy.newProxyInstance(
+//              executor.getClass().getClassLoader(), new Class[]{CommandExecutor.class}, exeProxy);
+        try {
+            cmdProxy.runCommand("ls -l");
+            cmdProxy.runCommand("rm -rf *");
+        } catch (Exception e) {
+            System.out.println("Exception Msg:" + e.getMessage());
+        }
+    }
 }/*
 'ls -l' command executed
 Exception Msg:rm command is not allowed for non-admin users.
