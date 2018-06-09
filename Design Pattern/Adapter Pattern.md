@@ -54,7 +54,7 @@ public class Client {
 public class Adapter_1 implements Target {
 
 	private Adaptee adaptee;
-	//通过构造函数传入具体需要适配的被适配类对象 
+	//通过构造函数传入具体需要适配的被适配类对象  
 	public Adapter_1(Adaptee adaptee) {
 		this.adaptee = adaptee;
 	}
