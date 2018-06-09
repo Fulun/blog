@@ -9,4 +9,4 @@ Adapter Pattern：Convert the interface of a class into another interface client
 类的适配器模式（采用继承实现）  
 对象适配器（采用对象组合方式实现）  
 #### 类图  
-[类适配器模式](images/类适配器模式.png)
+![类适配器模式](images/类适配器模式.png)
