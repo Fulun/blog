@@ -3,38 +3,38 @@
 ```Java
 public class TheadJoinTest implements Runnable {
 
-	@Override
-	public void run() {
-		Thread t = Thread.currentThread();
-		System.out.println("RunnableJob is being run by " + t.getName()
-				+ " at " + new Date());
-		try {
-			TimeUnit.SECONDS.sleep(1);
-		} catch (InterruptedException e) {
-			e.printStackTrace();
-		}
-	}
+    @Override
+    public void run() {
+        Thread t = Thread.currentThread();
+        System.out.println("RunnableJob is being run by " + t.getName()
+                + " at " + new Date());
+        try {
+            TimeUnit.SECONDS.sleep(1);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+    }
 
-	public static void main(String[] args) throws InterruptedException {
-		Runnable runnable = new TheadJoinTest();
-		Thread t1 = new Thread(runnable);
-		Thread t2 = new Thread(runnable);
-		Thread t3 = new Thread(runnable);
-		Thread t4 = new Thread(runnable);
-		Thread t5 = new Thread(runnable);
-		Thread t6 = new Thread(runnable);
-		Thread t7 = new Thread(runnable);
-		t1.start();
-		t1.join();
-		t2.start();
-		t2.join();
-		t3.start();
-		t3.join();
-		t4.start();
-		t5.start();
-		t6.start();
-		t7.start();
-	}
+    public static void main(String[] args) throws InterruptedException {
+        Runnable runnable = new TheadJoinTest();
+        Thread t1 = new Thread(runnable);
+        Thread t2 = new Thread(runnable);
+        Thread t3 = new Thread(runnable);
+        Thread t4 = new Thread(runnable);
+        Thread t5 = new Thread(runnable);
+        Thread t6 = new Thread(runnable);
+        Thread t7 = new Thread(runnable);
+        t1.start();
+        t1.join();
+        t2.start();
+        t2.join();
+        t3.start();
+        t3.join();
+        t4.start();
+        t5.start();
+        t6.start();
+        t7.start();
+    }
 }/*
 RunnableJob is being run by Thread-0 at Sun Jun 10 21:57:24 CST 2018
 RunnableJob is being run by Thread-1 at Sun Jun 10 21:57:25 CST 2018
@@ -66,7 +66,7 @@ thread scheduler选择了处在Ready状态的线程，该线程进入Running状�
 - **Timed waiting** 
 Timed waiting is a thread state for a thread waiting with a specified waiting time. A thread is in the timed waiting state due to calling one of the following methods with a specified positive waiting time:   
 通过调用如下方法让线程处于`Timed waiting`状态。   
-	- Thread.sleep(sleeptime)  //静态方法
+    - Thread.sleep(sleeptime)  //静态方法
     - Object.wait(timeout)     //对象的wait方法
     - Thread.join(timeout)     //例如线程t的join方法
     - LockSupport.parkNanos(timeout)  
@@ -77,6 +77,7 @@ A thread is in the waiting state due to the calling one of the following methods
     - Object.wait()  
     - Thread.join()  
     - LockSupport.park()  
+
  Note, that thread in the waiting state is waiting for another thread to perform a particular action. For example, a thread that has called Object.wait() on an object is waiting for another thread to call Object.notify() or Object.notifyAll() on that object. A thread that has called Thread.join() is waiting for a specified thread to terminate. It means that waiting state could be made a composite state with states corresponding to these specific conditions.  
  线程处于waiting状态，则正在等待其他线程执行某个特殊操作。比如说，一个线程调用了某个对象的Object.wait()方法，那么他就正在等待其他线程调用这个对象的Object.notify()方法或者 Object.notifyAll()方法。
 - **Blocked**  
@@ -85,5 +86,12 @@ Thread is in the blocked state while waiting for the monitor lock to enter a syn
 wait和notify方法必须放在同步块中。
 - **terminated**  
 After thread has completed execution of run() method, it is moved into terminated state.
-
+- 图例
+![threadState](https://github.com/Fulun/blog/blob/master/images/threadState.png)
+Waiting或者Time Waiting状态收到notify或者notifyall之后也可能直接进入runnable状态，而不需要先进blocked，接着才runnable。如下所示：
+![threadState](https://github.com/Fulun/blog/blob/master/images/threadState_1.png)
+- Ref  
+[thread state example](https://www.uml-diagrams.org/examples/java-6-thread-state-machine-diagram-example.html)  
+[thread state diagram 1](https://stackoverflow.com/questions/27406200/visualvm-thread-states)  
+[thread state diagram 2](https://stackoverflow.com/questions/11265289/thread-state-java)
 
