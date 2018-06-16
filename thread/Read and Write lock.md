@@ -17,10 +17,10 @@ Then you can use the read lock to safeguard a code block that performs read oper
 Lock readLock = rwLock.readLock();
 readLock.lock();
 try {
-	//reading data
+    //reading data
 }
 finally {
-	readLock.unlock();
+    readLock.unlock();
 }
 ```
 And use the write lock to safeguard a code block that performs update operation like this:  
@@ -29,10 +29,10 @@ And use the write lock to safeguard a code block that performs update operation 
 Lock writeLock = rwLock.writeLock();
 writeLock.lock();
 try {
-	//udpate data
+    //udpate data
 }
 finally {
-	writeLock.unlock();
+    writeLock.unlock();
 }
 ```
 A ReadWriteLock implementation guarantees the following behaviors:  
@@ -42,45 +42,45 @@ A ReadWriteLock implementation guarantees the following behaviors:
 - If a thread attempts to update the data while other threads are reading, the write thread also blocks until the read lock is released.  如果一个线程尝试更新数据，而其他线程正在读，那么写线程将会阻塞直至读锁释放。
 ```Java
 public class RWDictionary {
-	private final Map<String, Data> m = new TreeMap<String, Data>();
-	private final ReentrantReadWriteLock rwl = new ReentrantReadWriteLock();
-	private final Lock r = rwl.readLock();
-	private final Lock w = rwl.writeLock();
+    private final Map<String, Data> m = new TreeMap<String, Data>();
+    private final ReentrantReadWriteLock rwl = new ReentrantReadWriteLock();
+    private final Lock r = rwl.readLock();
+    private final Lock w = rwl.writeLock();
 
-	public Data get(String key) {
-		r.lock();
-		try {
-			return m.get(key);
-		} finally {
-			r.unlock();
-		}
-	}
+    public Data get(String key) {
+        r.lock();
+        try {
+            return m.get(key);
+        } finally {
+            r.unlock();
+        }
+    }
 
-	public String[] allKeys() {
-		r.lock();
-		try {
-			return m.keySet().toArray(new String[0]);
-		} finally {
-			r.unlock();
-		}
-	}
+    public String[] allKeys() {
+        r.lock();
+        try {
+            return m.keySet().toArray(new String[0]);
+        } finally {
+            r.unlock();
+        }
+    }
 
-	public Data put(String key, Data value) {
-		w.lock();
-		try {
-			return m.put(key, value);
-		} finally {
-			w.unlock();
-		}
-	}
+    public Data put(String key, Data value) {
+        w.lock();
+        try {
+            return m.put(key, value);
+        } finally {
+            w.unlock();
+        }
+    }
 
-	public void clear() {
-		w.lock();
-		try {
-			m.clear();
-		} finally {
-			w.unlock();
-		}
-	}
+    public void clear() {
+        w.lock();
+        try {
+            m.clear();
+        } finally {
+            w.unlock();
+        }
+    }
 }
 ```
