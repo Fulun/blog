@@ -81,8 +81,9 @@ java 通过创建一个初始类开始启动。这个初始类使用`bootstrap`l
   ```
   **结果分析**    ClassLoaderTest的类加载器的名称是AppClassLoader。也就是说这个类是由AppClassLoader这个类加载器加载的。System/ArrayList的类加载器是null。这说明这个类加载器是由BootStrap加载的。因为我们上面说了BootStrap不是java类，不需要类加载器加载。所以他的类加载器是null。\
   我们说了java给我们提供了三种类加载器：BootStrap，ExtClassLoader，AppClassLoader。这三种类加载器是有父子关系组成了一个树形结构。BootStrap是根节点，BootStrap下面挂着ExtClassLoader，ExtClassLoader下面挂着AppClassLoader.
-  ![AdapterPattern](https://github.com/Fulun/blog/blob/master/images/classloaderrelation.jpg)
-
+  ![AdapterPattern](https://github.com/Fulun/blog/blob/master/images/classloaderrelation.jpg)\
+  
+  每一个类加载器都有自己的管辖范围。BootStrap根节点，只负责加载rt.jar里的类; ExtClassLoader负责加载`JRE/lib/ext/*.jar`这个目录下的文件; 而AppClassLoader负责加载ClassPath目录下的所有jar文件。最后一级是我们自定义的加载器，他们的父类都是AppClassLoader。
 
 
 
