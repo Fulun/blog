@@ -45,45 +45,50 @@ java 通过创建一个初始类开始启动。这个初始类使用`bootstrap`l
         1. 类加载器本身也是一个java类,因为类加载器本身也是一个java类,那么这个特殊的java类【类加载器】是有谁加载进来的呢?这显然要有第一个类加载器，这第一个类加载器不是一个java类，它是BootStrap。
         2. BootStrap不是一个java类，不需要类加载器加载，他是嵌套在java虚拟机内核里面的。java 虚拟机内核已启动的时候，他就已经在那里面了，他是用c++语言写的一段二进制代码。他可以去加载别的类，其中别的类就包含了类加载器(如上面提到的`ExtClassLoader`和`AppClassLoader`)
     - **举个例子**
-```Java
-    public class ClassLoaderTest {
-        public static void main(String[] args) {
-            System.out.println("----------AppClassLoader-------------");
-            //加载main方法的加载器
-            ClassLoader classLoader = ClassLoaderTest.class.getClassLoader();
-            //获取该对象的类加载器
-            System.out.println(classLoader);
-            //类加载器也是一个java类，可以打印名称
-            System.out.println(classLoader.getClass().getName());
-            //获取对象加载器的另外一种方式
-            System.out.println(java.lang.ClassLoader.getSystemClassLoader());
-            System.out.println("----------ExtClassLoader-------------");
-            System.out.println(classLoader.getParent());
-            System.out.println("----------Bootstrap----------------");
-            System.out.println(classLoader.getParent().getParent());
-            //Object对象的类加载器
-            System.out.println(Object.class.getClassLoader());
-            //基础类加载器
-            System.out.println(ArrayList.class.getClassLoader());
-        }
-    }/*
-    ----------AppClassLoader-------------
-    sun.misc.Launcher$AppClassLoader@18b4aac2
-    sun.misc.Launcher$AppClassLoader
-    sun.misc.Launcher$AppClassLoader@18b4aac2
-    ----------ExtClassLoader-------------
-    sun.misc.Launcher$ExtClassLoader@1540e19d
-    ----------Bootstrap----------------
-    null
-    null
-    null
-    *///~
-  ```
+    ```Java
+        public class ClassLoaderTest {
+            public static void main(String[] args) {
+                System.out.println("----------AppClassLoader-------------");
+                //加载main方法的加载器
+                ClassLoader classLoader = ClassLoaderTest.class.getClassLoader();
+                //获取该对象的类加载器
+                System.out.println(classLoader);
+                //类加载器也是一个java类，可以打印名称
+                System.out.println(classLoader.getClass().getName());
+                //获取对象加载器的另外一种方式
+                System.out.println(java.lang.ClassLoader.getSystemClassLoader());
+                System.out.println("----------ExtClassLoader-------------");
+                System.out.println(classLoader.getParent());
+                System.out.println("----------Bootstrap----------------");
+                System.out.println(classLoader.getParent().getParent());
+                //Object对象的类加载器
+                System.out.println(Object.class.getClassLoader());
+                //基础类加载器
+                System.out.println(ArrayList.class.getClassLoader());
+            }
+        }/*
+        ----------AppClassLoader-------------
+        sun.misc.Launcher$AppClassLoader@18b4aac2
+        sun.misc.Launcher$AppClassLoader
+        sun.misc.Launcher$AppClassLoader@18b4aac2
+        ----------ExtClassLoader-------------
+        sun.misc.Launcher$ExtClassLoader@1540e19d
+        ----------Bootstrap----------------
+        null
+        null
+        null
+        *///~
+      ```
   **结果分析**    ClassLoaderTest的类加载器的名称是AppClassLoader。也就是说这个类是由AppClassLoader这个类加载器加载的。System/ArrayList的类加载器是null。这说明这个类加载器是由BootStrap加载的。因为我们上面说了BootStrap不是java类，不需要类加载器加载。所以他的类加载器是null。\
   我们说了java给我们提供了三种类加载器：BootStrap，ExtClassLoader，AppClassLoader。这三种类加载器是有父子关系组成了一个树形结构。BootStrap是根节点，BootStrap下面挂着ExtClassLoader，ExtClassLoader下面挂着AppClassLoader.
   ![AdapterPattern](https://github.com/Fulun/blog/blob/master/images/classloaderrelation.jpg)\
   
   每一个类加载器都有自己的管辖范围。BootStrap根节点，只负责加载rt.jar里的类; ExtClassLoader负责加载`JRE/lib/ext/*.jar`这个目录下的文件; 而AppClassLoader负责加载ClassPath目录下的所有jar文件。最后一级是我们自定义的加载器，他们的父类都是AppClassLoader。
+  - **JVM类加载机制**
+       - 全盘负责，当一个类加载器负责加载某个Class时，该Class所依赖的和引用的其他Class也将由该类加载器负责载入，除非显示使用另外一个类加载器来载入。
+       - 父类委托，先让父类加载器试图加载该类，只有在父类加载器无法加载该类时才尝试从自己的类路径中加载该类。
+       - 缓存机制，缓存机制将会保证所有加载过的Class都会被缓存，当程序中需要使用某个Class时，类加载器先从缓存区寻找该Class，只有缓存区不存在，系统才会读取该类对应的二进制数据，并将其转换成Class对象，存入缓存区。这就是为什么修改了Class后，必须重启JVM，程序的修改才会生效。  
+       - 双亲委派模型的工作流程是：如果一个类加载器收到了类加载的请求，它首先不会自己去尝试加载这个类，而是把请求委托给父加载器去完成，依次向上，因此，所有的类加载请求最终都应该被传递到顶层的启动类加载器中，只有当父加载器在它的搜索范围中没有找到所需的类时，即无法完成该加载，子加载器才会尝试自己去加载该类。
 
 
 
