@@ -45,7 +45,7 @@ java 通过创建一个初始类开始启动。这个初始类使用`bootstrap`l
         1. 类加载器本身也是一个java类,因为类加载器本身也是一个java类,那么这个特殊的java类【类加载器】是有谁加载进来的呢?这显然要有第一个类加载器，这第一个类加载器不是一个java类，它是BootStrap。
         2. BootStrap不是一个java类，不需要类加载器加载，他是嵌套在java虚拟机内核里面的。java 虚拟机内核已启动的时候，他就已经在那里面了，他是用c++语言写的一段二进制代码。他可以去加载别的类，其中别的类就包含了类加载器(如上面提到的`ExtClassLoader`和`AppClassLoader`)
     - **举个例子**
-    ```Java
+```Java
         public class ClassLoaderTest {
             public static void main(String[] args) {
                 System.out.println("----------AppClassLoader-------------");
@@ -78,7 +78,8 @@ java 通过创建一个初始类开始启动。这个初始类使用`bootstrap`l
         null
         null
         *///~
-      ```
+```  
+
   **结果分析**    ClassLoaderTest的类加载器的名称是AppClassLoader。也就是说这个类是由AppClassLoader这个类加载器加载的。System/ArrayList的类加载器是null。这说明这个类加载器是由BootStrap加载的。因为我们上面说了BootStrap不是java类，不需要类加载器加载。所以他的类加载器是null。\
   我们说了java给我们提供了三种类加载器：BootStrap，ExtClassLoader，AppClassLoader。这三种类加载器是有父子关系组成了一个树形结构。BootStrap是根节点，BootStrap下面挂着ExtClassLoader，ExtClassLoader下面挂着AppClassLoader.
   ![AdapterPattern](https://github.com/Fulun/blog/blob/master/images/classloaderrelation.jpg)\
