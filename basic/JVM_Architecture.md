@@ -26,11 +26,11 @@ JVM提供三种class loader。分别是：Bootstrap class loader, Extension clas
     **Link也划分为三个阶段：**  
     - **Verify** : 校验字节序是否满足JVM规范。  
     - **Prepare**：静态变量的内存在这个阶段被分配。注意这个阶段只是为类变量（也就是静态变量，不是对象变量）分配内存，分配的内存被赋为默认值（default value ,注意不是初始值）。 比如private static int var = 5; 这个阶段，var被赋值为0，而不是5。当然若变量定义为final变量，则就赋值为5了。  
-    - **Resolve**：所以当前类的符号引用（symbolic references inside the current class are resolved）被解析。比如说，你有指向其他类的的引用（suppose you have a reference to other classes or reference just to values in constant pool）或者指向常量池的引用（private String str = "123"）,(these are changed from symbolic to the actual reference),这些符号引用被改变为实际引用。 
- so though it's like depicted in a serial fasion like Verify, Prepare and Resolve. This might get executed slightly in parallel or you know it might overlap in functionality to certain extent sometimes based on the implementation 虽然link看似可以被串行的划分为 Verify, Prepare 和Resolve三个阶段。实际上，执行过程可能轻微地并行 或者某些时候，三者的功能可以会有一定的重叠，这取决于虚拟机的实现。
+    - **Resolve**：当前类的符号引用（symbolic references inside the current class are resolved）被解析。比如说，你有指向其他类的的引用（suppose you have a reference to other classes or reference just to values in constant pool）或者指向常量池的引用（private String str = "123"）,(these are changed from symbolic to the actual reference),这些符号引用被改变为实际引用。   
+    so though it's like depicted in a serial fasion like Verify, Prepare and Resolve. This might get executed slightly in parallel or you know it might overlap in functionality to certain extent sometimes based on the implementation 虽然link看似可以被串行的划分为 Verify, Prepare 和Resolve三个阶段。实际上，执行过程可能轻微地并行 或者某些时候，三者的功能可以会有一定的重叠，这取决于虚拟机的实现。
 
     **Initialize阶段**:  
-（it is the phase their static initializers of your class ）这个阶段，你的类完成了静态属性/block的初始化（prepare阶段的只是分配内存并初始化为默认值，这个阶段就赋为初始值了）举个例子：  
+    （it is the phase their static initializers of your class ）这个阶段，你的类完成了静态属性/block的初始化（prepare阶段的只是分配内存并初始化为默认值，这个阶段就赋为初始值了）举个例子：  
 	```Java
 	class StaticInit
 	{
@@ -52,7 +52,7 @@ JVM提供三种class loader。分别是：Bootstrap class loader, Extension clas
 ***
 - **Runtime data areas**  
 ![Runtime data areas](https://github.com/Fulun/blog/blob/master/images/JVM_Arch/Runtime_data_areas.bmp)  
-**元数据(meta data)**——“data about data” 关于数据的数据，元数据是指从信息资源中抽取出来的用于说明其特征、内容的结构化的数据(如题名,版本、出版数据、相关说明,包括检索点等)，用于组织、描述、检索、保存、管理信息和知识资源。  
+**元数据(meta data)**——“data about data” 关于数据的数据。元数据是指从信息资源中抽取出来的用于说明其特征、内容的结构化的数据(如题名,版本、出版数据、相关说明,包括检索点等)，用于组织、描述、检索、保存、管理信息和知识资源。  
 `String str = new String("hello");`  
 上面的语句中变量str放在栈上，用new创建出来的字符串对象放在堆上，而"hello"这个字面量是放在方法区的。 
 	```Java
@@ -60,10 +60,11 @@ JVM提供三种class loader。分别是：Bootstrap class loader, Extension clas
 	String s5 = new String("Hello");
 	String s6 = s5.intern();
 	```
-    s1 == s6这两个相等完全归功于intern方法，s5在堆中，内容为Hello ，intern方法会尝试将Hello字符串添加到常量池中，并返回其在常量池中的地址，因为常量池中已经有了Hello字符串，所以intern方法直接返回地址；而s1在编译期就已经指向常量池了，因此s1和s6指向同一地址，所以相等。 
+    s1 == s6这两个相等完全归功于intern方法，s5在堆中，内容为Hello ，intern方法会尝试将Hello字符串添加到常量池中，并返回其在常量池中的地址，因为常量池中已经有了Hello字符串，所以intern方法直接返回地址；而s1在编译期就已经指向常量池了，因此s1和s6指向同一地址，所以相等。  
     Run-time Data Areas可以划分为5个区域：分别是，Method Area, Heap, Java Stacks, PC Registers, Native Method Stacks.  
     - **Method Area**: 放置元数据的地方。meta-data corresponding to class is stored. 
-    比如说静态变量, bytecode, class-level的常量池， 字符串常量池，都保存在method area. Method    Area通常也被叫做permanent space. 默认情况下64MB大小。可以使用`-XX MaxPermSize`调整method area(永久代)的大小。设置太小，可能产生java.lang.OutOfMemoryError: PermGen Space...  
+    比如说静态变量, bytecode, class-level的常量池， 字符串常量池，都保存在method area.   
+    Method Area通常也被叫做permanent space. 默认情况下64MB大小。可以使用`-XX MaxPermSize`调整method area(永久代)的大小。设置太小，可能产生java.lang.OutOfMemoryError: PermGen Space...  
     Java 8 hotspot(java虚拟机的一种实现)虚拟机去除了Method Area(永久代)，被叫做metaspace。move method area into sperate memory in the native operating system.  
     **方法区（Method Area)与Java堆一样，是各个线程共享的内存区域**，它用于存储已被虚拟机加载的类信息、常量、静态变量、即时编译器编译后的代码等数据。 
     - **Heap 区域**  
@@ -76,23 +77,23 @@ JVM提供三种class loader。分别是：Bootstrap class loader, Extension clas
     包含 stack frame corresponding to the current method execution per thread. 上如所示，从左到邮编，依次为t2 ,t2, t3的调用栈。从下向上调用。stack 包含本地变量, 调用入参，返回值等等。 
     - **Native method stack**
     上图所示，Java stack frame调用Native method stack 比如 load a dll and run something from the DLL.
-    - **有趣的事情**
+    - **有趣的事情**  
     递归调用，忘记设置退出条件，导致不断压栈无限循环，从而产生java.lang.StackOverflowError  
-    -Xss 用来调整栈大小。
+    `-Xss`参数用来调整栈大小。    
     - **Summary**  
-    Method area : for class data.
-	heap : for object data.
-	PC registers: per thread for programm counter
-	Java stack: per thread for keeping the current executing methods stack frame
-	- **划重点**
+    Method area : for class data.  
+	heap : for object data.  
+	PC registers: per thread for programm counter.  
+	Java stack: per thread for keeping the current executing methods stack frame  
+	- **划重点**  
 	pc registers, java statck, native method stack 每个线程都是独享的。每个线程独有一份（pc register + stack +native method stack），相互隔离。method area 和heap 是线程共享的，created per JVM。意思就是说 you have one method area and one heap per JVM instance.
 	***
-- **执行引擎**
-![Execution Engine](https://github.com/Fulun/blog/blob/master/images/JVM_Arch/execution_engine.bmp)
+- **执行引擎**  
+![Execution Engine](https://github.com/Fulun/blog/blob/master/images/JVM_Arch/execution_engine.bmp)  
 once data area is loaded with instruction to be executed (the current instruction to be executed is ready) what happens is that the Java Interpeter interpreters the current instruction that is then the bytecode and execute it.  
 执行引擎，分为4部分：  
-    - **Interpreter**: take bytecode instruction. look at it, finds out what native operation has to be done and executes that native operation. so that is done by using  native method interface which interfaces Native method libraries that are present in the JVM. 如果你查看JRE bin folder(E:\install\Java\jre1.8.0_171\bin)目录下有许多*.DLL文件。这些DLL文件都是platform-specific native libraries that is used by the execution engine
-    - **JIT Compiler**: 执行引擎为了加快Java运行，做了很多优化，例如JIT 编译技术，假设我们有一些指令集，这些指令集重复执行的频率很高，这些指令将不会被一遍一遍的被interperter 器解释，instead what happens is the JIT compiler will on the fly compiles this set of instructions and keep the target machine code ready for execution so there is no more interpretation involved here. so it's only machine code execution 
+    - **Interpreter**: take bytecode instruction. look at it, finds out what native operation has to be done and executes that native operation. so that is done by using  native method interface which interfaces Native method libraries that are present in the JVM. 如果你查看JRE bin folder(E:\install\Java\jre1.8.0_171\bin)目录下有许多*.DLL文件。这些DLL文件都是platform-specific native libraries that is used by the execution engine.
+    - **JIT Compiler**: 执行引擎为了加快Java运行，做了很多优化，例如JIT 编译技术，假设我们有一些指令集，这些指令集重复执行的频率很高，这些指令将不会被一遍一遍的被interperter 器解释，instead what happens is the JIT compiler will on the fly compiles this set of instructions and keep the target machine code ready for execution so there is no more interpretation involved here. so it's only machine code execution.   
     - **Hotspot profiler**: For example in this case it helps the compiler to compile frequently used instructions.
     - **GC**: 略
     ***
